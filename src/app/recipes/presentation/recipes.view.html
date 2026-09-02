@@ -1,0 +1,157 @@
+<section class="wrap recipes-page">
+
+    <header class="page-header">
+        <div class="page-header__titles">
+            <span class="page-header__eyebrow">{{ 'nav.recipes' | translate }}</span>
+            <h1>{{ 'recipes.title' | translate }}</h1>
+            <p class="page-header__subtitle">{{ 'recipes.subtitle' | translate }}</p>
+        </div>
+
+        <button
+                class="btn btn-primary generate-recipes-btn"
+                (click)="generateNewRecipes()"
+                [disabled]="generating"
+                [attr.aria-label]="'recipes.generate' | translate">
+            <span class="fs-icon" *ngIf="!generating">auto_awesome</span>
+            <span class="spinner spinner--sm" *ngIf="generating"></span>
+            {{ generating ? ('recipes.generating' | translate) : ('recipes.generate' | translate) }}
+        </button>
+    </header>
+    <div class="toolbar generating-banner" *ngIf="generating">
+        <span class="fs-icon">auto_awesome</span>
+        {{ 'recipes.generatingHint' | translate }}
+    </div>
+
+  <!-- MODO: recomendadas según inventario / catálogo completo -->
+  <div class="toolbar recipes-mode" *ngIf="!loading && recommended.length">
+    <div class="recipes-mode__info" *ngIf="!showAll">
+      <h2 class="recipes-mode__title">{{ 'recipes.recommended.title' | translate }}</h2>
+      <p class="muted">{{ 'recipes.recommended.subtitle' | translate }}</p>
+    </div>
+    <button class="btn btn-outline" *ngIf="!showAll" (click)="toggleShowAll(true)">
+      {{ 'recipes.recommended.showAll' | translate }} ({{ recipes.length }})
+    </button>
+    <button class="btn btn-outline" *ngIf="showAll" (click)="toggleShowAll(false)">
+      {{ 'recipes.recommended.back' | translate }}
+    </button>
+  </div>
+
+  <!-- TOOLBAR: search + dropdown filters (solo en el catálogo completo) -->
+  <div class="toolbar" *ngIf="showAll">
+    <div class="toolbar__search">
+      <div class="input-icon">
+        <span class="fs-icon">search</span>
+        <input
+          type="search"
+          class="input-field"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="filterRecipes()"
+          [placeholder]="'recipes.searchPlaceholder' | translate"
+          name="search" />
+      </div>
+    </div>
+
+    <div class="filter-control">
+      <span class="filter-control__label">{{ 'recipes.level' | translate }}</span>
+      <div class="select-field filter-select filter-select--sm">
+        <select [(ngModel)]="selectedLevel" (ngModelChange)="filterRecipes()">
+          <option value="All">{{ 'recipes.filters.allLevels' | translate }}</option>
+          <option value="Easy">{{ 'recipes.filters.easy' | translate }}</option>
+          <option value="Intermediate">{{ 'recipes.filters.intermediate' | translate }}</option>
+          <option value="Advanced">{{ 'recipes.filters.advanced' | translate }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-control">
+      <span class="filter-control__label">{{ 'recipes.type' | translate }}</span>
+      <div class="select-field filter-select filter-select--sm">
+        <select [(ngModel)]="selectedType" (ngModelChange)="filterRecipes()">
+          <option value="All">{{ 'recipes.filters.allTypes' | translate }}</option>
+          <option value="Breakfast">{{ 'recipes.filters.breakfast' | translate }}</option>
+          <option value="Meals">{{ 'recipes.filters.meals' | translate }}</option>
+          <option value="Snacks">{{ 'recipes.filters.snacks' | translate }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKELETON -->
+  <div class="recipes-grid" *ngIf="loading">
+    <div class="skeleton-card recipe-skeleton" *ngFor="let s of skeletons">
+      <div class="skeleton" style="height:150px;border-radius:10px;margin-bottom:14px"></div>
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--text"></div>
+      <div class="skeleton skeleton--text skeleton--line-sm"></div>
+    </div>
+  </div>
+
+  <!-- LIST -->
+  <ng-container *ngIf="!loading">
+    <div class="recipes-grid" *ngIf="visibleRecipes.length; else empty">
+      <article class="recipe-card card" *ngFor="let r of visibleRecipes" (click)="openModal(r)">
+        <div class="recipe-card__media">
+          <img [src]="imageFor(r)" [alt]="r.title" (error)="onImgError($event)" loading="lazy" />
+          <span class="recipe-card__level badge badge-neutral" *ngIf="r.level">{{ r.level }}</span>
+          <span class="recipe-card__match badge badge-success" *ngIf="!showAll && matchesFor(r)">
+            {{ matchesFor(r) }} {{ 'recipes.recommended.matches' | translate }}
+          </span>
+        </div>
+        <div class="recipe-card__body">
+          <h3 class="recipe-card__title">{{ r.title }}</h3>
+          <p class="recipe-card__desc muted" *ngIf="r.description">{{ r.description }}</p>
+          <div class="recipe-card__meta">
+            <span class="meta-item" *ngIf="r.time"><span class="fs-icon fs-icon--sm">schedule</span>{{ r.time }}</span>
+            <span class="meta-item" *ngIf="r.type"><span class="fs-icon fs-icon--sm">restaurant</span>{{ r.type }}</span>
+            <span class="meta-item rating" *ngIf="r.rating">
+              <span class="fs-icon fs-icon--sm fs-icon--fill">star</span>{{ r.rating }}
+            </span>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #empty>
+      <div class="card">
+        <div class="empty-state">
+          <span class="empty-state__icon"><span class="fs-icon">menu_book</span></span>
+          <p>{{ 'recipes.empty' | translate }}</p>
+        </div>
+      </div>
+    </ng-template>
+  </ng-container>
+
+  <!-- MODAL -->
+  <div class="modal-backdrop" *ngIf="modalOpen" (click)="closeModal()">
+    <div class="modal-panel recipe-dialog" (click)="$event.stopPropagation()">
+      <button class="icon-btn recipe-dialog__close" (click)="closeModal()" [attr.aria-label]="'common.close' | translate">
+        <span class="fs-icon fs-icon--sm">close</span>
+      </button>
+
+      <div class="recipe-dialog__media">
+        <img [src]="imageFor(active)" [alt]="active?.title || ''" (error)="onImgError($event)" />
+      </div>
+
+      <div class="recipe-dialog__body" *ngIf="active">
+        <h2 class="recipe-dialog__title">{{ active.title }}</h2>
+        <div class="recipe-card__meta">
+          <span class="meta-item" *ngIf="active.level"><span class="fs-icon fs-icon--sm">bar_chart</span>{{ active.level }}</span>
+          <span class="meta-item" *ngIf="active.time"><span class="fs-icon fs-icon--sm">schedule</span>{{ active.time }}</span>
+          <span class="meta-item" *ngIf="active.type"><span class="fs-icon fs-icon--sm">restaurant</span>{{ active.type }}</span>
+          <span class="meta-item rating" *ngIf="active.rating"><span class="fs-icon fs-icon--sm fs-icon--fill">star</span>{{ active.rating }}</span>
+        </div>
+
+        <h3 class="recipe-dialog__subttl">{{ 'recipes.ingredients' | translate }}</h3>
+        <ul class="recipe-dialog__list">
+          <li *ngFor="let i of active.ingredients">{{ i }}</li>
+        </ul>
+
+        <h3 class="recipe-dialog__subttl">{{ 'recipes.steps' | translate }}</h3>
+        <ol class="recipe-dialog__list recipe-dialog__list--ol">
+          <li *ngFor="let s of active.steps">{{ s }}</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+</section>

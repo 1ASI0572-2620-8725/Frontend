@@ -1,0 +1,63 @@
+:host { display: block; }
+
+.list { display: flex; flex-direction: column; gap: var(--fs-space-3); }
+
+/* ---- Alert card ---- */
+.alert-card {
+  display: flex;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+/* Barra de color lateral eliminada a pedido: las cards ya no tienen aristas de color.
+   La severidad se comunica con el badge del encabezado. */
+.alert-card__bar { display: none; }
+
+.alert-card__main { flex: 1; padding: var(--fs-space-4) var(--fs-space-5); min-width: 0; }
+
+.alert-card__top {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-2);
+  margin-bottom: var(--fs-space-2);
+  flex-wrap: wrap;
+}
+.badge { text-transform: capitalize; }
+.source-badge { text-transform: none; letter-spacing: 0; }
+.source-badge .fs-icon { font-size: 14px; }
+.alert-card__time { margin-left: auto; }
+
+.alert-card__title { font-size: var(--fs-font-size-md); font-weight: 600; margin-bottom: 2px; }
+.alert-card__msg { color: var(--fs-text-secondary); font-size: var(--fs-font-size-sm); margin-bottom: var(--fs-space-3); }
+
+.alert-card__actions { display: flex; gap: var(--fs-space-2); flex-wrap: wrap; }
+
+/* ---- Modal ---- */
+.alert-modal { max-width: 460px; padding: var(--fs-space-6); }
+.alert-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--fs-space-3);
+  margin-bottom: var(--fs-space-3);
+}
+.alert-modal__head h2 { font-size: var(--fs-font-size-lg); font-weight: 700; }
+.alert-modal__msg { color: var(--fs-text-secondary); margin-bottom: var(--fs-space-4); }
+
+.detail-list { display: flex; flex-direction: column; gap: 0; }
+.detail-list > div {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid var(--fs-border);
+}
+.detail-list dt { color: var(--fs-text-muted); font-size: var(--fs-font-size-sm); }
+.detail-list dd { font-weight: 600; font-size: var(--fs-font-size-sm); }
+.cap { text-transform: capitalize; }
+
+.alert-modal__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--fs-space-2);
+  margin-top: var(--fs-space-5);
+}

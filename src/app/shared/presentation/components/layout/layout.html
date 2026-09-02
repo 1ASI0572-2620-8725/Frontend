@@ -1,0 +1,92 @@
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">
+      <span class="fs-icon fs-icon--fill">eco</span>
+    </div>
+    <span class="brand-name">FreshSense</span>
+  </div>
+
+  <nav class="top-actions">
+    <div class="lang-toggle" (click)="toggleLang()" [title]="'app.language' | translate">
+      <span class="lang-pill" [class.es]="curr()==='es'">
+        <span class="lang-opt" [class.on]="curr()==='en'">EN</span>
+        <span class="lang-opt" [class.on]="curr()==='es'">ES</span>
+      </span>
+    </div>
+    <a routerLink="/login" class="logout-btn">
+      <span class="fs-icon fs-icon--sm">logout</span>
+      {{ 'app.logout' | translate }}
+    </a>
+  </nav>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <nav class="side-nav">
+
+      <span class="nav-section">{{ 'nav.sections.overview' | translate }}</span>
+
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">space_dashboard</span>
+        <span>{{ 'nav.dashboard' | translate }}</span>
+      </a>
+
+      <span class="nav-section">{{ 'nav.sections.operations' | translate }}</span>
+
+      <a routerLink="/inventory" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">inventory_2</span>
+        <span>{{ 'nav.inventory' | translate }}</span>
+      </a>
+
+      <a routerLink="/monitoring" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">sensors</span>
+        <span>{{ 'nav.monitoring' | translate }}</span>
+      </a>
+
+      <a routerLink="/devices" routerLinkActive="active" class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="16" height="16" rx="2"/>
+          <path d="M9 9h6v6H9z"/>
+          <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+        </svg>
+        <span>{{ 'nav.devices' | translate }}</span>
+      </a>
+
+      <a routerLink="/alerts" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">warning</span>
+        <span>{{ 'nav.alerts' | translate }}</span>
+      </a>
+
+      <a routerLink="/recipes" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">menu_book</span>
+        <span>{{ 'nav.recipes' | translate }}</span>
+      </a>
+
+      <a routerLink="/reports" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">bar_chart</span>
+        <span>{{ 'nav.reports' | translate }}</span>
+      </a>
+
+      <span class="nav-section">{{ 'nav.sections.engagement' | translate }}</span>
+
+      <a routerLink="/notifications" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">notifications</span>
+        <span>{{ 'nav.notifications' | translate }}</span>
+      </a>
+
+      <span class="nav-section">{{ 'nav.sections.account' | translate }}</span>
+
+      <a routerLink="/settings" routerLinkActive="active" class="nav-item">
+        <span class="fs-icon nav-icon">settings</span>
+        <span>{{ 'nav.settings' | translate }}</span>
+      </a>
+
+    </nav>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+
+<fs-toast></fs-toast>

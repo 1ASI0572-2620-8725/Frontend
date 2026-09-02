@@ -1,0 +1,152 @@
+:host { display: block; }
+.monitoring { display: flex; flex-direction: column; }
+
+/* ---- Status bar ---- */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fs-space-5);
+  flex-wrap: wrap;
+  margin-bottom: var(--fs-space-5);
+}
+
+.status-bar__main { display: flex; align-items: center; gap: var(--fs-space-3); }
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--fs-success);
+  box-shadow: 0 0 0 4px var(--fs-success-bg);
+}
+.status-dot[data-status='warn'] { background: var(--fs-warning); box-shadow: 0 0 0 4px var(--fs-warning-bg); }
+.status-dot[data-status='crit'] { background: var(--fs-danger); box-shadow: 0 0 0 4px var(--fs-danger-bg); }
+
+.status-bar__kpis { display: flex; gap: var(--fs-space-8); }
+.status-bar__kpis .stat__value { font-size: var(--fs-font-size-xl); }
+
+/* ---- Metric cards ---- */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--fs-space-4);
+  margin-bottom: var(--fs-space-5);
+}
+
+.metric-card { position: relative; overflow: hidden; }
+
+.metric-card__head {
+  display: flex;
+  align-items: center;
+  gap: var(--fs-space-3);
+  margin-bottom: var(--fs-space-4);
+}
+.metric-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--fs-radius-md);
+  background: var(--fs-primary-light);
+  color: var(--fs-primary);
+  flex-shrink: 0;
+}
+.metric-card__icon .fs-icon { font-size: 24px; }
+.metric-card[data-status='warn'] .metric-card__icon { background: var(--fs-warning-bg); color: var(--fs-warning); }
+.metric-card[data-status='crit'] .metric-card__icon { background: var(--fs-danger-bg); color: var(--fs-danger); }
+
+.metric-card__title { flex: 1; min-width: 0; }
+.metric-card__title h3 { font-size: var(--fs-font-size-md); font-weight: 600; }
+
+.metric-card__value {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: var(--fs-space-4);
+}
+.metric-card__unit {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--fs-text-muted);
+  margin-left: 4px;
+}
+
+.metric-card__spark {
+  width: 100%;
+  height: 48px;
+  display: block;
+}
+.metric-card__spark polyline {
+  fill: none;
+  stroke: var(--fs-primary);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.metric-card[data-status='warn'] .metric-card__spark polyline { stroke: var(--fs-warning); }
+.metric-card[data-status='crit'] .metric-card__spark polyline { stroke: var(--fs-danger); }
+
+/* ---- History ---- */
+.history__head { margin-bottom: var(--fs-space-4); }
+.history__box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fs-space-4);
+  padding: var(--fs-space-4);
+  background: var(--fs-bg);
+  border-radius: var(--fs-radius-md);
+  flex-wrap: wrap;
+}
+.history__date { display: block; font-size: var(--fs-font-size-md); margin-top: 2px; }
+
+/* ---- Modal última lectura ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 35, 27, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fs-space-4);
+  z-index: 1000;
+}
+.modal-card {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--fs-space-6);
+}
+.modal-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--fs-space-4);
+}
+.modal-card__head h2 { font-size: var(--fs-font-size-lg); font-weight: 700; }
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--fs-text-muted);
+  display: inline-flex;
+  padding: 4px;
+  border-radius: var(--fs-radius-sm);
+}
+.icon-btn:hover { background: var(--fs-bg); color: var(--fs-text); }
+
+.reading-detail { display: flex; flex-direction: column; }
+.reading-detail > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-top: 1px solid var(--fs-border);
+}
+.reading-detail > div:first-child { border-top: none; }
+.reading-detail dt { color: var(--fs-text-muted); font-size: var(--fs-font-size-sm); }
+.reading-detail dd { font-weight: 600; }

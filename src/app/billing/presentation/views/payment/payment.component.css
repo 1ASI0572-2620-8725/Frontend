@@ -1,0 +1,43 @@
+:host { display: block; }
+
+.billing-page { min-height: 100dvh; background: var(--fs-bg); }
+
+.billing-topbar {
+  height: var(--fs-topbar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--fs-space-8);
+  background: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+}
+.brand { display: flex; align-items: center; gap: var(--fs-space-2); }
+.brand-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--fs-primary); color: #fff; border-radius: var(--fs-radius-md);
+}
+.brand-name { font-weight: 700; font-size: 16px; color: var(--fs-primary-dark); }
+
+.payment-section {
+  display: flex;
+  justify-content: center;
+  padding: var(--fs-space-10) var(--fs-space-4);
+}
+.payment-card { width: 100%; max-width: 460px; padding: var(--fs-space-8); }
+
+.payment-card__head { text-align: center; margin-bottom: var(--fs-space-6); }
+.payment-card__head h1 { font-size: var(--fs-font-size-xl); font-weight: 700; }
+.payment-card__head p { margin-top: 4px; font-size: var(--fs-font-size-sm); }
+
+.payment-form { display: flex; flex-direction: column; gap: var(--fs-space-4); }
+.payment-form .btn-lg { margin-top: var(--fs-space-2); }
+
+.payment-secure {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: var(--fs-font-size-xs);
+  color: var(--fs-text-muted);
+}
+.payment-secure .fs-icon { color: var(--fs-success); }

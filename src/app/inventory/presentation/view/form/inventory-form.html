@@ -1,0 +1,149 @@
+<section class="inventory-add wrap">
+
+  <header class="page-header">
+    <div class="page-header__titles">
+      <span class="page-header__eyebrow">{{ 'nav.inventory' | translate }}</span>
+      <h1>{{ 'inventory.add.title' | translate }}</h1>
+      <p class="page-header__subtitle">{{ 'inventory.add.subtitle' | translate }}</p>
+    </div>
+  </header>
+
+  <!-- Selector de modo: elegir del catálogo o escribir a mano -->
+  <div class="mode-tabs" role="tablist">
+    <button type="button" class="mode-tab" role="tab" [class.mode-tab--active]="mode === 'catalog'"
+            [attr.aria-selected]="mode === 'catalog'" (click)="setMode('catalog')">
+      <span class="fs-icon fs-icon--sm">grid_view</span>
+      {{ 'inventory.catalog.tab' | translate }}
+    </button>
+    <button type="button" class="mode-tab" role="tab" [class.mode-tab--active]="mode === 'manual'"
+            [attr.aria-selected]="mode === 'manual'" (click)="setMode('manual')">
+      <span class="fs-icon fs-icon--sm">edit</span>
+      {{ 'inventory.catalog.manualTab' | translate }}
+    </button>
+  </div>
+
+  <!-- PANEL CATÁLOGO -->
+  <div class="card form-card" *ngIf="mode === 'catalog'">
+    <div class="catalog-toolbar">
+      <div class="input-icon catalog-toolbar__search">
+        <span class="fs-icon">search</span>
+        <input type="search" class="input-field" [(ngModel)]="catalogSearch"
+               [placeholder]="'inventory.catalog.searchPlaceholder' | translate" name="catalogSearch" />
+      </div>
+      <div class="select-field catalog-toolbar__cat">
+        <select [(ngModel)]="catalogCategory" name="catalogCategory">
+          <option value="All">{{ 'inventory.catalog.allCategories' | translate }}</option>
+          <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+    </div>
+
+    <p class="muted" *ngIf="catalogLoading">{{ 'inventory.catalog.loading' | translate }}</p>
+
+    <ng-container *ngIf="!catalogLoading">
+      <div class="catalog-grid" *ngIf="filteredCatalog.length; else catalogEmpty">
+        <button type="button" class="catalog-item" *ngFor="let item of filteredCatalog" (click)="pick(item)">
+          <img class="catalog-item__img" [src]="item.imageUrl" [alt]="item.name"
+               (error)="onCatalogImgError($event)" loading="lazy" />
+          <span class="catalog-item__name">{{ item.name }}</span>
+          <span class="catalog-item__cat badge badge-neutral">{{ item.category }}</span>
+        </button>
+      </div>
+      <ng-template #catalogEmpty>
+        <div class="empty-state">
+          <span class="empty-state__icon"><span class="fs-icon">search_off</span></span>
+          <p>{{ 'inventory.catalog.empty' | translate }}</p>
+          <button type="button" class="btn btn-outline" (click)="setMode('manual')">
+            {{ 'inventory.catalog.addManually' | translate }}
+          </button>
+        </div>
+      </ng-template>
+    </ng-container>
+  </div>
+
+  <!-- PANEL FORMULARIO (manual o precargado del catálogo) -->
+  <form (ngSubmit)="onSubmit()" #productForm="ngForm" class="card form-card" *ngIf="mode === 'manual'">
+
+    <div class="picked-hint" *ngIf="pickedFrom">
+      <span class="fs-icon fs-icon--sm">check_circle</span>
+      {{ 'inventory.catalog.pickedHint' | translate: { name: pickedFrom } }}
+    </div>
+
+    <div class="form-field">
+      <label for="name">{{ 'inventory.add.name' | translate }} <span class="req">*</span></label>
+      <div class="input-with-tools">
+        <input type="text" id="name" name="name" class="input-field"
+               [(ngModel)]="product.name" #nameRef="ngModel" required />
+        <button type="button" class="icon-btn" [class.icon-btn--active]="recording"
+                [disabled]="recording" (click)="startVoice()"
+                [attr.aria-label]="'inventory.add.voiceStart' | translate"
+                [title]="'inventory.add.voiceStart' | translate">
+          <span class="fs-icon fs-icon--sm">mic</span>
+        </button>
+        <button type="button" class="icon-btn" [disabled]="!recording" (click)="stopVoice()"
+                [attr.aria-label]="'inventory.add.voiceStop' | translate"
+                [title]="'inventory.add.voiceStop' | translate">
+          <span class="fs-icon fs-icon--sm">stop</span>
+        </button>
+        <button type="button" class="icon-btn" disabled
+                [title]="'inventory.add.scan' | translate"
+                [attr.aria-label]="'inventory.add.scan' | translate">
+          <span class="fs-icon fs-icon--sm">photo_camera</span>
+        </button>
+      </div>
+      <small class="form-hint" *ngIf="voiceHint">{{ voiceHint }}</small>
+      <small class="form-error" *ngIf="nameRef.invalid && nameRef.touched">
+        <span class="fs-icon fs-icon--sm">error</span>{{ 'inventory.form.requiredFields' | translate }}
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label for="description">{{ 'inventory.add.description' | translate }}</label>
+      <textarea id="description" name="description" class="textarea-field"
+                [(ngModel)]="product.description" rows="3"></textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-field">
+        <label for="category">{{ 'inventory.add.category' | translate }} <span class="req">*</span></label>
+        <div class="select-field">
+          <select id="category" name="category" [(ngModel)]="product.category" required>
+            <option value="" disabled>{{ 'inventory.add.selectCategory' | translate }}</option>
+            <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="quantity">{{ 'inventory.add.quantity' | translate }}</label>
+        <input type="number" id="quantity" name="quantity" class="input-field"
+               [(ngModel)]="product.quantity" min="0" />
+      </div>
+    </div>
+
+    <div class="form-field">
+      <label for="expirationDate">{{ 'inventory.add.expiration' | translate }} <span class="req">*</span></label>
+      <input type="date" id="expirationDate" name="expirationDate" class="input-field"
+             [(ngModel)]="product.expirationDate" #expirationRef="ngModel" required />
+      <small class="form-hint">{{ 'inventory.add.expirationHint' | translate }}</small>
+      <small class="form-error" *ngIf="expirationRef.invalid && expirationRef.touched">
+        <span class="fs-icon fs-icon--sm">error</span>{{ 'inventory.form.requiredFields' | translate }}
+      </small>
+    </div>
+
+    <div class="form-field">
+      <label for="image">{{ 'inventory.add.image' | translate }}</label>
+      <input type="url" id="image" name="imageUrl" class="input-field"
+             [(ngModel)]="product.imageUrl" placeholder="https://example.com/product.jpg" />
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-ghost" (click)="cancel()">{{ 'common.cancel' | translate }}</button>
+      <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid">
+        <span class="fs-icon fs-icon--sm">add</span>
+        {{ 'inventory.add.cta' | translate }}
+      </button>
+    </div>
+
+  </form>
+</section>

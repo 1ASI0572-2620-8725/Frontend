@@ -1,0 +1,75 @@
+:host { display: block; }
+
+.billing-page { min-height: 100dvh; background: var(--fs-bg); }
+
+.billing-topbar {
+  height: var(--fs-topbar-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--fs-space-8);
+  background: var(--fs-surface);
+  border-bottom: 1px solid var(--fs-border);
+}
+.brand { display: flex; align-items: center; gap: var(--fs-space-2); }
+.brand-icon {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--fs-primary); color: #fff; border-radius: var(--fs-radius-md);
+}
+.brand-name { font-weight: 700; font-size: 16px; color: var(--fs-primary-dark); }
+
+.plans-section {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: var(--fs-space-10) var(--fs-space-6);
+}
+.plans-intro { text-align: center; margin-bottom: var(--fs-space-8); }
+.plans-intro h1 { font-size: var(--fs-font-size-2xl); font-weight: 700; letter-spacing: -0.02em; }
+.plans-intro p { font-size: var(--fs-font-size-md); margin-top: 6px; }
+
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--fs-space-5);
+  align-items: stretch;
+}
+
+.plan-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fs-space-3);
+  position: relative;
+  padding: var(--fs-space-6);
+}
+.plan-card.featured {
+  border-color: var(--fs-primary);
+  box-shadow: 0 0 0 1px var(--fs-primary), var(--fs-shadow-md);
+}
+.plan-card__tag {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--fs-primary);
+  color: #fff;
+  font-size: var(--fs-font-size-xs);
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--fs-radius-pill);
+  white-space: nowrap;
+}
+.plan-card__head { display: flex; align-items: center; gap: var(--fs-space-3); }
+.plan-card__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: var(--fs-radius-md);
+  background: var(--fs-primary-light); color: var(--fs-primary);
+}
+.plan-card__head h3 { font-size: var(--fs-font-size-md); font-weight: 600; }
+.plan-card__price { font-size: var(--fs-font-size-xl); font-weight: 800; letter-spacing: -0.02em; }
+.plan-card__desc { font-size: var(--fs-font-size-sm); flex: 1; }
+.plan-card .btn { margin-top: var(--fs-space-2); }
+
+@media (max-width: 820px) {
+  .plans-grid { grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+}

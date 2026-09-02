@@ -1,0 +1,137 @@
+<section class="wrap monitoring">
+
+  <header class="page-header">
+    <div class="page-header__titles">
+      <span class="page-header__eyebrow">{{ 'nav.monitoring' | translate }}</span>
+      <h1>{{ 'monitoring.title' | translate }}</h1>
+      <p class="page-header__subtitle">{{ 'monitoring.subtitle' | translate }}</p>
+    </div>
+    <div class="page-header__actions">
+      <button class="btn btn-ghost" type="button" [disabled]="exporting()" (click)="exportCsv()">
+        <span class="fs-icon fs-icon--sm">download</span>
+        {{ 'monitoring.exportCsv' | translate }}
+      </button>
+    </div>
+  </header>
+
+  <!-- STATUS BAR -->
+  <div class="status-bar card" *ngIf="!loading(); else statusSkeleton"
+       [class.is-warn]="overallStatus()==='warn'" [class.is-crit]="overallStatus()==='crit'">
+    <div class="status-bar__main">
+      <span class="status-dot" [attr.data-status]="overallStatus()"></span>
+      <div>
+        <strong>{{ (overallStatus()==='ok' ? 'monitoring.status.healthy' : 'monitoring.status.offline') | translate }}</strong>
+        <p class="muted text-sm" *ngIf="!noData()">{{ 'monitoring.lastSync' | translate:{ minutes: lastSyncMinutes } }}</p>
+      </div>
+    </div>
+    <div class="status-bar__kpis" *ngIf="!noData()">
+      <div class="stat">
+        <span class="stat__label">{{ 'monitoring.kpi.avgTemp' | translate }}</span>
+        <span class="stat__value">{{ avgTemp() }}<small>°C</small></span>
+      </div>
+      <div class="stat">
+        <span class="stat__label">{{ 'monitoring.kpi.avgHumidity' | translate }}</span>
+        <span class="stat__value">{{ avgHumidity() }}<small>%</small></span>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #statusSkeleton>
+    <div class="status-bar card">
+      <div class="status-bar__main">
+        <span class="skeleton skeleton--circle" style="width:14px;height:14px"></span>
+        <div style="flex:1">
+          <div class="skeleton skeleton--text" style="width:180px"></div>
+          <div class="skeleton skeleton--text skeleton--line-sm"></div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- METRIC CARDS -->
+  <div class="metric-grid" *ngIf="!loading(); else cardsSkeleton">
+    <article class="metric-card card" *ngFor="let m of metrics()" [attr.data-status]="m.status">
+      <header class="metric-card__head">
+        <span class="metric-card__icon"><span class="fs-icon">{{ m.icon }}</span></span>
+        <div class="metric-card__title">
+          <h3>{{ (m.id==='temp' ? 'monitoring.temperature' : 'monitoring.humidity') | translate }}</h3>
+          <span class="muted text-xs">{{ 'monitoring.card.healthyRange' | translate }}: {{ m.rangeLabel }}</span>
+        </div>
+        <span class="badge" [ngClass]="{
+          'badge-success': m.status==='ok',
+          'badge-warning': m.status==='warn',
+          'badge-danger':  m.status==='crit'
+        }">{{ ('home.sensor.' + m.status) | translate }}</span>
+      </header>
+
+      <div class="metric-card__value">
+        {{ m.value }}<span class="metric-card__unit">{{ m.unit }}</span>
+      </div>
+
+      <svg class="metric-card__spark" viewBox="0 0 200 48" preserveAspectRatio="none">
+        <polyline [attr.points]="sparkPoints(m.trend)" />
+      </svg>
+    </article>
+  </div>
+
+  <ng-template #cardsSkeleton>
+    <div class="metric-grid">
+      <article class="skeleton-card" *ngFor="let s of skeletons">
+        <div class="skeleton skeleton--circle" style="width:44px;height:44px;margin-bottom:16px"></div>
+        <div class="skeleton skeleton--title" style="width:40%"></div>
+        <div class="skeleton" style="height:40px;width:60%;margin:12px 0"></div>
+        <div class="skeleton skeleton--text"></div>
+      </article>
+    </div>
+  </ng-template>
+
+  <!-- EMPTY STATE -->
+  <div class="card" *ngIf="noData() && !loading()">
+    <div class="empty-state">
+      <span class="empty-state__icon"><span class="fs-icon">sensors_off</span></span>
+      <h3>{{ 'monitoring.empty' | translate }}</h3>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <article class="card history" *ngIf="!loading() && !noData()">
+    <div class="history__head">
+      <h3 class="h2">{{ 'monitoring.history.title' | translate }}</h3>
+    </div>
+    <div class="history__box">
+      <div>
+        <span class="muted text-sm">{{ 'monitoring.history.last' | translate:{ date: lastReadingDate } }}</span>
+        <strong class="history__date">{{ lastReadingDate }}</strong>
+      </div>
+      <button class="btn btn-outline" type="button" (click)="openLast()">
+        <span class="fs-icon fs-icon--sm">visibility</span>
+        {{ 'monitoring.viewLast' | translate }}
+      </button>
+    </div>
+  </article>
+
+  <!-- MODAL: última lectura -->
+  <div class="modal-overlay" *ngIf="showDetail() && latest() as r" (click)="closeDetail()">
+    <div class="modal-card card" (click)="$event.stopPropagation()">
+      <header class="modal-card__head">
+        <h2>{{ 'monitoring.viewLast' | translate }}</h2>
+        <button class="icon-btn" type="button" (click)="closeDetail()" aria-label="Cerrar">
+          <span class="fs-icon">close</span>
+        </button>
+      </header>
+      <dl class="reading-detail">
+        <div><dt>{{ 'monitoring.temperature' | translate }}</dt><dd>{{ r.temperature }} °C</dd></div>
+        <div><dt>{{ 'monitoring.humidity' | translate }}</dt><dd>{{ r.humidity }} %</dd></div>
+        <div><dt>{{ 'monitoring.detail.freshness' | translate }}</dt>
+          <dd><span class="badge" [ngClass]="{
+              'badge-success': r.status==='GREEN',
+              'badge-warning': r.status==='YELLOW',
+              'badge-danger':  r.status==='RED'
+            }">{{ freshnessLabel(r.status) | translate }}</span></dd></div>
+        <div *ngIf="r.category"><dt>{{ 'monitoring.detail.category' | translate }}</dt><dd>{{ r.category }}</dd></div>
+        <div><dt>{{ 'monitoring.detail.recordedAt' | translate }}</dt><dd>{{ lastReadingDate }}</dd></div>
+      </dl>
+    </div>
+  </div>
+
+</section>
