@@ -72,8 +72,8 @@ npm test         # Tests unitarios con Karma
 | Recurso | URL |
 |---------|-----|
 | Frontend (Azure Static Web Apps) | `https://proud-rock-06bc9ad10.7.azurestaticapps.net` |
-| Backend API | `https://freshsense-backend.mangoground-03a86fb8.eastus.azurecontainerapps.io/api` |
-| Swagger UI | `https://freshsense-backend.mangoground-03a86fb8.eastus.azurecontainerapps.io/swagger-ui/index.html` |
+| Backend API | `https://137-131-253-18.sslip.io/api` |
+| Swagger UI | `https://137-131-253-18.sslip.io/swagger-ui/index.html` |
 
 ## CI/CD
 
@@ -99,7 +99,7 @@ El archivo `src/environments/environment.production.ts` apunta al backend desple
 ```typescript
 export const environment = {
     production: true,
-    apiBaseUrl: 'https://freshsense-backend.mangoground-03a86fb8.eastus.azurecontainerapps.io/api'
+    apiBaseUrl: 'https://137-131-253-18.sslip.io/api'
 };
 ```
 

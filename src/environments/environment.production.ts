@@ -1,4 +1,4 @@
 export const environment = {
     production: true,
-    apiBaseUrl: 'https://freshsense-backend.mangoground-03a86fb8.eastus.azurecontainerapps.io/api'
+    apiBaseUrl: 'https://137-131-253-18.sslip.io/api'
 };
